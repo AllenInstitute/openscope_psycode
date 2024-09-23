@@ -424,7 +424,7 @@ def init_grating(window, sweep_length, blank_length, contrast,  tf, sf, ori, siz
                                         shuffle             = True,
                                         save_sweep_table    = True,
                                         )
-        grating.stim_path = r"C:\\not_a_stim_script\\init_grating.stim"
+        grating.stim_path = r"C:\\not_a_stim_script\\surround_suppression_block.stim"
 
         return grating
 
@@ -456,7 +456,7 @@ def create_surround_suppression_mapping(window, number_runs = 15):
     gratings.append(
         init_grating(window, sweep_length, blank_length, contrast, tf, sf, ori, size, positions, blank_sweeps, number_runs))
 
-    stimulus.stim_path = r"C:\\not_a_stim_script\\receptive_field_block.stim"
+    stimulus.stim_path = r"C:\\not_a_stim_script\\surround_suppression_block.stim"
 
     return gratings
 
@@ -562,25 +562,27 @@ start_stop_padding = json_params.get('start_stop_padding', 0.5)
 # add prologue to start of session
 prologue = json_params.get('prologue', False)
 number_runs_rf = json_params.get('number_runs_rf', 1) # 8 is the number of repeats for prod(8min)
-number_runs_ss = json_params.get('number_runs_ss', 1) # TODO: we should have a separate param for trial number of surround suppression mapping
+number_runs_ss = json_params.get('number_runs_ss', 1) # separate param for trial number of surround suppression mapping
+
 prologue_offset = 0
+delta_prologue = 5
 if prologue:
-    epilogue_stim_pre = create_receptive_field_mapping(window, number_runs_rf)
+    prologue_stim_pre = create_receptive_field_mapping(window, number_runs_rf)
     f.add_static_stimulus(
-        epilogue_stim_pre,
+        prologue_stim_pre,
         when=0.0,
         name="pre_receptive_field_mapping",
     )
     # TODO: not sure about the following
     #######
-    epilogue_stim_pre = create_surround_suppression_mapping(window, number_runs_ss)
+    prologue_stim_pre_2 = create_surround_suppression_mapping(window, number_runs_ss)
     f.add_static_stimulus(
-        epilogue_stim_pre,
-        when='end',
+        prologue_stim_pre_2,
+        when=number_runs_rf*60.75+delta_prologue,
         name="pre_surround_suppression_mapping"
     )
     #######
-    prologue_offset = number_runs_rf*60.75 + number_runs_ss*50 #one surround suppression mapping takes 50 sec
+    prologue_offset = number_runs_rf*60.75 + number_runs_ss*50 + delta_prologue*2 #one surround suppression mapping takes 50 sec
 
 injection_start = json_params.get('injection_start', None)  
 injection_end = json_params.get('injection_end', None)
@@ -615,6 +617,7 @@ doc_object = DocWithLickSpout(stage = stage, task=f, delay=prologue_offset+start
 list_epochs.append(doc_object)
 
 epilogue = json_params.get('epilogue', False)
+delta_epilogue = 5
 if epilogue:
     epilogue_stim_post = create_receptive_field_mapping(window, number_runs_rf)
     f.add_static_stimulus(
@@ -624,10 +627,10 @@ if epilogue:
     )
     # TODO: not sure about the following
     #######
-    epilogue_stim_post = create_surround_suppression_mapping(window, number_runs_ss)
+    epilogue_stim_post_2 = create_surround_suppression_mapping(window, number_runs_ss)
     f.add_static_stimulus(
-        epilogue_stim_post,
-        when='end',
+        epilogue_stim_post_2,
+        when=prologue_offset+start_stop_padding+max_task_duration_min*60+number_runs_rf*60.75+delta_epilogue,
         name="post_surround_suppression_mapping"
     )
     #######
