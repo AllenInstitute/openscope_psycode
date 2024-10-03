@@ -451,7 +451,7 @@ def create_surround_suppression_mapping(window, number_runs = 15):
             if x == 0 or y == 0:
                 positions.append((x, y))
 
-    gratings = init_grating(window, sweep_length, blank_length, contrast, tf, sf, ori, size, positions, blank_sweeps, number_runs))
+    gratings = init_grating(window, sweep_length, blank_length, contrast, tf, sf, ori, size, positions, blank_sweeps, number_runs)
 
     return gratings
 
