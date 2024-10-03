@@ -456,8 +456,6 @@ def create_surround_suppression_mapping(window, number_runs = 15):
     gratings.append(
         init_grating(window, sweep_length, blank_length, contrast, tf, sf, ori, size, positions, blank_sweeps, number_runs))
 
-    stimulus.stim_path = r"C:\\not_a_stim_script\\surround_suppression_block.stim"
-
     return gratings
 
 def load_params():
