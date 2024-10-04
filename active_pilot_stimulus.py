@@ -565,7 +565,7 @@ if prologue:
     prologue_stim_pre = create_receptive_field_mapping(window, number_runs_rf)
     f.add_static_stimulus(
         prologue_stim_pre,
-        when=0.0,
+        when=start_stop_padding,
         name="pre_receptive_field_mapping",
     )
     # TODO: not sure about the following
@@ -573,11 +573,11 @@ if prologue:
     prologue_stim_pre_2 = create_surround_suppression_mapping(window, number_runs_ss)
     f.add_static_stimulus(
         prologue_stim_pre_2,
-        when=number_runs_rf*60.75+delta_prologue,
+        when=start_stop_padding+number_runs_rf*60.75+delta_prologue,
         name="pre_surround_suppression_mapping"
     )
     #######
-    prologue_offset = number_runs_rf*60.75 + number_runs_ss*50 + delta_prologue*2 #one surround suppression mapping takes 50 sec
+    prologue_offset = number_runs_rf*60.75 + number_runs_ss*60 + delta_prologue*2 #one surround suppression mapping takes 50 sec
 
 injection_start = json_params.get('injection_start', None)  
 injection_end = json_params.get('injection_end', None)
@@ -617,18 +617,16 @@ if epilogue:
     epilogue_stim_post = create_receptive_field_mapping(window, number_runs_rf)
     f.add_static_stimulus(
         epilogue_stim_post,
-        when='end',
+        when=prologue_offset+start_stop_padding+max_task_duration_min*60+delta_epilogue,
         name="post_receptive_field_mapping"
     )
-    # TODO: not sure about the following
-    #######
     epilogue_stim_post_2 = create_surround_suppression_mapping(window, number_runs_ss)
     f.add_static_stimulus(
         epilogue_stim_post_2,
-        when=prologue_offset+start_stop_padding+max_task_duration_min*60+number_runs_rf*60.75+delta_epilogue,
+        when=prologue_offset+start_stop_padding+max_task_duration_min*60+number_runs_rf*60.75+2*delta_epilogue,
         name="post_surround_suppression_mapping"
     )
-    #######
+    
 try:
     f.start_epochs(list_epochs)
 except SystemExit:
