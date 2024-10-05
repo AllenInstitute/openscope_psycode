@@ -228,12 +228,21 @@ class AddEpochDoc(DoCTask):
         super(DoCTask, self).start()
         # schedule a time for the task to end
         number_runs_rf = self._doc_config['number_runs_rf'] 
+        number_runs_ss = self._doc_config['number_runs_ss'] 
+
         if  self._doc_config['prologue']:
-            prologue_offset = number_runs_rf*60
+            delta_prologue = 5
+            prologue_offset = number_runs_rf*60.75 + number_runs_ss*60 + delta_prologue*2
         else:
             prologue_offset = 0
+        if self._doc_config['epilogue']:
+            delta_epilogue = 5
+            epilogue_offset = number_runs_rf*60.75 + number_runs_ss*60 + delta_epilogue*2
+        else:
+            epilogue_offset = 0
+
         start_stop_padding = self._doc_config['start_stop_padding']
-        self._task_scheduled_end = time.clock() + self._doc_config['max_task_duration_min'] * 60.0 + start_stop_padding + prologue_offset
+        self._task_scheduled_end = time.clock() + self._doc_config['max_task_duration_min'] * 60.0 + start_stop_padding + prologue_offset + epilogue_offset
         self.stim_off()
         self.started.emit()
         ETimer.singleShot(prologue_offset+start_stop_padding, self._next_trial)
@@ -289,10 +298,12 @@ class DocWithLickSpout(Epoch):
     def _on_entry(self):
         logging.info("Extending lickspout")
         self.stage.extend_lickspout()
+        self._task.stim_on()
 
     def _on_exit(self):
         logging.info("Retracting lickspout")
         self.stage.retract_lickspout()
+        self._task.stim_off()
 
 class DocDistribModifier(Epoch):
     """ DoC Epoch that modifies the distribution of the change stimuli. """
