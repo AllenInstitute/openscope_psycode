@@ -637,6 +637,10 @@ if epilogue:
         when=prologue_offset+start_stop_padding+max_task_duration_min*60+number_runs_rf*60.75+2*delta_epilogue,
         name="post_surround_suppression_mapping"
     )
+
+    # This is to make the session ends at the end of static stimulus    
+    f.task_ended.disconnect(f._close)
+    f.items["post_surround_suppression_mapping"].playback_stopped.connect(f._close_static_stimulus)
     
 try:
     f.start_epochs(list_epochs)
