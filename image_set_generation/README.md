@@ -25,25 +25,40 @@ Contour Complexity Index (CCI) spread. Indices into the 118 set:
 Correlations are Pearson r between the reprocessed image and the reference image
 from the Allen Brain Observatory NWB file (experiment 663488086).
 
+## Processed Images (Set P)
+
+### Overview
+
+![Overview tile](processed/overview_tile.png)
+
+### Individual Images
+
+| | | | |
+|:---:|:---:|:---:|:---:|
+| ![im000](processed/im000.png) | ![im018](processed/im018.png) | ![im025](processed/im025.png) | ![im038](processed/im038.png) |
+| **im000** (BSDS) | **im018** (BSDS) | **im025** (BSDS) | **im038** (BSDS) |
+| ![im039](processed/im039.png) | ![im070](processed/im070.png) | ![im088](processed/im088.png) | ![im117](processed/im117.png) |
+| **im039** (BSDS) | **im070** (VHC) | **im088** (VHC) | **im117** (McGill) |
+
 ## Processing Pipeline
 
 Identical to the Allen Visual Coding luminance-matching pipeline
-(see `2019_05_29_create_E_F_reproc_set` notebook):
+(see 2019_05_29_create_E_F_reproc_set notebook):
 
-1. **Load** raw image (BSDS `.jpg`, VHC `.imc` uint16 binary, McGill `.tif`)
+1. **Load** raw image (BSDS .jpg, VHC .imc uint16 binary, McGill .tif)
 2. **Gamma decode** — power 2.2 for BSDS/McGill, no-op for VHC
 3. **Crop & resize** — force 16:10 aspect ratio, resize to 1920×1200, crop to
    prewarp size (918 × 1174)
-4. **Compute target luminance** — `uint8(255 × median(mean_to_max_ratio))` across
+4. **Compute target luminance** — uint8(255 × median(mean_to_max_ratio)) across
    all 8 images → **target_luminance = 70**
-5. **Luminance match** — `fit_scale_to_saturation(target_luminance=70,
-   target_saturation=2, apply_screen_mask=True)`
+5. **Luminance match** — it_scale_to_saturation(target_luminance=70,
+   target_saturation=2, apply_screen_mask=True)
 6. **Convert to uint8** — clip [0, 255]
 7. **Apply screen mask** — pixels outside the warped screen region set to 127
 
 ## Folder Structure
 
-```
+`
 image_set_generation/
 ├── Natural_Images_Lum_Matched_set_ophys_P_2026.04.09.pkl   # Final pkl
 ├── README.md
@@ -62,22 +77,22 @@ image_set_generation/
 └── code/                 # Scripts to reproduce
     ├── generate_psycode_pkl_v3.py   # Full reprocessing pipeline
     └── package_psycode_set.py       # Packaging utility
-```
+`
 
 ## pkl Format
 
-```python
+`python
 import pickle
 with open('Natural_Images_Lum_Matched_set_ophys_P_2026.04.09.pkl', 'rb') as f:
     image_set = pickle.load(f)
 
 # image_set['im000']['im000'] -> numpy uint8 array, shape (918, 1174)
-```
+`
 
 ## Dependencies
 
 - Python 3.11+
 - numpy, Pillow, matplotlib
-- allensdk (for `make_display_mask` screen mask)
+- allensdk (for make_display_mask screen mask)
 
-Install: `pip install allensdk numpy Pillow matplotlib`
+Install: pip install allensdk numpy Pillow matplotlib
