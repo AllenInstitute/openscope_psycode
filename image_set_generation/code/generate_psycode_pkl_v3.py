@@ -407,7 +407,7 @@ def main():
     # --- Save pkl ---
     os.makedirs(os.path.dirname(OUTPUT_PKL), exist_ok=True)
     with open(OUTPUT_PKL, 'wb') as handle:
-        pickle.dump(dict_image, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(dict_image, handle, protocol=2)  # protocol=2 for Python 2.7 compat
     print(f"\nSaved pkl -> {OUTPUT_PKL}")
 
     # --- Verify pkl ---
